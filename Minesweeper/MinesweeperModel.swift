@@ -34,7 +34,7 @@ public class MinesweeperModel {
             let row = Int(floor(Double(nodeIndex/dimension)))
             let column = nodeIndex % dimension
             
-            print("col: \(column), row: \(row)")
+//            print("col: \(column), row: \(row)")
             
             let cell = MinesweeperNode(column: column, row: row)
 
@@ -96,12 +96,27 @@ public class MinesweeperNode {
     var column: Int
     var row: Int
     var hasBomb: Bool = false
+    var hidden: Bool = true
+    var marked: Bool = false
     var neighbors: Array<MinesweeperNode>
 
     init(column: Int, row: Int) {
         self.column = column
         self.row = row
         self.neighbors = Array<MinesweeperNode>()
+    }
+    
+    func description() -> String {
+        if self.marked {
+            return "+"
+        }
+        else if !self.hidden  {
+            return self.hasBomb ? "*" : "O"
+        }
+        //default hidden state
+        else {
+            return " "
+        }
     }
 }
 
