@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2C516CD224AFBF010031A69E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C516CD124AFBF010031A69E /* main.swift */; };
+		2C516CD924AFD7890031A69E /* ConsoleIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C516CD824AFD7890031A69E /* ConsoleIO.swift */; };
+		2C516CDB24AFD9400031A69E /* Minesweeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C516CDA24AFD9400031A69E /* Minesweeper.swift */; };
+		2CC5A4AF24B15977003F0F1F /* MinesweeperModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,9 @@
 /* Begin PBXFileReference section */
 		2C516CCE24AFBF010031A69E /* Minesweeper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Minesweeper; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C516CD124AFBF010031A69E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		2C516CD824AFD7890031A69E /* ConsoleIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleIO.swift; sourceTree = "<group>"; };
+		2C516CDA24AFD9400031A69E /* Minesweeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minesweeper.swift; sourceTree = "<group>"; };
+		2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinesweeperModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				2C516CD124AFBF010031A69E /* main.swift */,
+				2C516CD824AFD7890031A69E /* ConsoleIO.swift */,
+				2C516CDA24AFD9400031A69E /* Minesweeper.swift */,
+				2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */,
 			);
 			path = Minesweeper;
 			sourceTree = "<group>";
@@ -120,7 +129,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CC5A4AF24B15977003F0F1F /* MinesweeperModel.swift in Sources */,
+				2C516CDB24AFD9400031A69E /* Minesweeper.swift in Sources */,
 				2C516CD224AFBF010031A69E /* main.swift in Sources */,
+				2C516CD924AFD7890031A69E /* ConsoleIO.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
