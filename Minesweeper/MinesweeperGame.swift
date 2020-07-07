@@ -95,12 +95,13 @@ public class Minesweeper {
         guard let currentNode = currentModel.nodeAt(column: column, row: row) else { return "" }
         
         if currentNode.hasBomb {
+            currentModel.revealAll()
             let result = "*** BOOM! YOU LOST! ***\n \(self.currentBoard())"
             self.model = nil
             return result
         }
         else {
-            let revealedNodes = currentModel.reveal(column: column, row: row)
+            _ = currentModel.reveal(column: column, row: row)
 
             //TODO return subset of nodes
             return self.currentBoard()
