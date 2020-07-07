@@ -27,13 +27,28 @@ public class Minesweeper {
             else if input.hasPrefix("new") {
                 let newArgs = self.numericComponents(input)
                 if newArgs.count == 2 {
-                    self.model = MinesweeperModel(dimension: Int(newArgs[0]), bombs: Int(newArgs[1]))
+                    self.model = MinesweeperModel(dimension: newArgs[0], bombs: newArgs[1])
+                    consoleIO.writeMessage("*** NEW GAME ***")
+                    consoleIO.writeMessage(self.currentBoard())
                 }
                 else {
                     consoleIO.writeMessage("Invalid entry; please create new game with 'new x y' for a new game of dimension x, bombs y.")
                 }
             }
             else if input.hasPrefix("reveal") {
+                let newArgs = self.numericComponents(input)
+                if let currentModel = self.model, newArgs.count == 2 {
+                    if newArgs[0] >= currentModel.dimension || newArgs[1] >= currentModel.dimension {
+                        consoleIO.writeMessage("Invalid entry; please reveal cells within the board's dimensions.")
+                    }
+                    else {
+                        let revealed = self.reveal(column: newArgs[0], row: newArgs[1])
+                        consoleIO.writeMessage(revealed)
+                    }
+                }
+                else {
+                    consoleIO.writeMessage("Invalid entry; please create new game with 'new x y' for a new game of dimension x, bombs y.")
+                }
             }
             //TEST ONLY
             else if input == "board" {
@@ -49,7 +64,7 @@ public class Minesweeper {
         guard let currentModel = self.model else { return "No current game" }
         //print rows-wise, since Strings are built as rows of text
         var board: String = ""
-        for sep in 0..<((currentModel.dimension * 2) + 1) {
+        for _ in 0..<((currentModel.dimension * 2) + 1) {
             board += "-"
         }
         board += "\n"
@@ -66,7 +81,7 @@ public class Minesweeper {
             
             //row separator
             board += "\n"
-            for sep in 0..<((currentModel.dimension * 2) + 1) {
+            for _ in 0..<((currentModel.dimension * 2) + 1) {
                 board += "-"
             }
             board += "\n"
@@ -75,10 +90,27 @@ public class Minesweeper {
         return board
     }
     
-    //returns numberic portion of whitespace-separated string with three elements
+    func reveal(column: Int, row: Int) -> String {
+        guard let currentModel = self.model else { return "No current game" }
+        guard let currentNode = currentModel.nodeAt(column: column, row: row) else { return "" }
+        
+        if currentNode.hasBomb {
+            let result = "*** BOOM! YOU LOST! ***\n \(self.currentBoard())"
+            self.model = nil
+            return result
+        }
+        else {
+            let revealedNodes = currentModel.reveal(column: column, row: row)
+
+            //TODO return subset of nodes
+            return self.currentBoard()
+        }
+    }
+    
+    //returns numeric portion of whitespace-separated string with three elements
     //first element is ignored
     //if string is not in this form, returns empty array
-    func numericComponents(_ input: String) -> [Int] {
+    private func numericComponents(_ input: String) -> [Int] {
         var numerics: [Int] = []
         
         let newArgs = input.components(separatedBy: " ")

@@ -84,6 +84,17 @@ public class MinesweeperModel {
         
         return self.nodes[index]
     }
+    
+    func reveal(column: Int, row: Int) -> [MinesweeperNode] {
+        guard let node = self.nodeAt(column: column, row: row) else { return [] }
+        return node.reveal()
+    }
+    
+    func revealAll() {
+        for node in self.nodes {
+            node.hidden = false
+        }
+    }
 }
 
 struct Coord: Hashable {
@@ -110,13 +121,63 @@ public class MinesweeperNode {
         if self.marked {
             return "+"
         }
-        else if !self.hidden  {
-            return self.hasBomb ? "*" : "O"
+        else if self.hasBomb  {//!self.hidden && self.hasBomb  {
+            return "*"
+        }
+        else if !self.hidden {
+            let bombs = self.neighborBombs()
+            return bombs > 0 ? String(bombs) : "O"
         }
         //default hidden state
         else {
             return " "
         }
+    }
+    
+    //returns count of neighbor bombs
+    func neighborBombs() -> Int {
+        var bombs = 0
+        for neighbor in self.neighbors {
+            bombs += (neighbor.hasBomb ? 1 : 0)
+        }
+        
+        return bombs
+    }
+    
+    //if this node contains bomb, reveal itself
+    //if not, recursively reveal all non-bomb and bomb-adjacent nodes
+    func reveal(_ recursive: Bool = false) -> [MinesweeperNode] {
+        var nodes: [MinesweeperNode] = []
+        
+        //always includes self if not recursive
+        if !recursive {
+            self.hidden = false
+            nodes.append(self)
+        }
+        
+        //return only self if has bomb
+        if self.hasBomb {
+            return nodes
+        }
+        else {
+            for neighbor in neighbors {
+                //skip neighbors with bombs
+                if neighbor.hasBomb {
+                    continue
+                }
+                else {
+                    neighbor.hidden = false
+                    nodes.append(neighbor)
+                    
+                    //recurse thru all valid neighbor nodes if this node has no neighborBombs
+                    if self.neighborBombs() == 0 {
+                        nodes.append(contentsOf: neighbor.reveal(true))
+                    }
+                }
+            }
+        }
+        
+        return nodes
     }
 }
 
