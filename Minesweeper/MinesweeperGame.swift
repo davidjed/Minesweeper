@@ -322,9 +322,9 @@ class MinesweeperModel {
             return false
         }
         for node in self.nodes {
-            //a hidden marked node with a mine counts as a win
+            //a marked node with a mine counts as a win
             //a revealed node with no mine counts as a win
-            won = node.hidden && node.marked && node.hasBomb || !node.hidden && !node.hasBomb
+            won = (node.marked && node.hasBomb) || (!node.hidden && !node.hasBomb)
             
             if !won {
                 break
