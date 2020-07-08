@@ -8,11 +8,10 @@
 
 import Foundation
 
-public class MinesweeperModel {
+class MinesweeperModel {
     
     var dimension: Int
     var nodes: [MinesweeperNode] = []
-    var edges: [MinesweeperEdge] = []
     
     init(dimension: Int, bombs: Int) {
         self.dimension = dimension
@@ -102,13 +101,20 @@ public class MinesweeperModel {
     }
 }
 
+//convenience struct
 struct Coord: Hashable {
   let column: Int
   let row: Int
 }
 
-public class MinesweeperNode : Hashable, Equatable {
+//represents a single cell in the game
+class MinesweeperNode : Hashable, Equatable {
     
+    static let hiddenCell = " "
+    static let revealedCell = "O"
+    static let bombCell = "*"
+    static let markedCell = "+"
+
     var column: Int
     var row: Int
     var hasBomb: Bool = false
@@ -124,18 +130,18 @@ public class MinesweeperNode : Hashable, Equatable {
     
     func description() -> String {
         if self.marked {
-            return "+"
+            return MinesweeperNode.markedCell
         }
-        else if /*!self.hidden && */self.hasBomb {
-            return "*"
+        else if !self.hidden && self.hasBomb {
+            return MinesweeperNode.bombCell
         }
         else if !self.hidden {
             let bombs = self.neighborBombs()
-            return bombs > 0 ? String(bombs) : "O"
+            return bombs > 0 ? String(bombs) : MinesweeperNode.revealedCell
         }
         //default hidden state
         else {
-            return " "
+            return MinesweeperNode.hiddenCell
         }
     }
     
@@ -164,7 +170,7 @@ public class MinesweeperNode : Hashable, Equatable {
                 return nodes
             }
         }
-        //only add neighbor nodes and recursions of same if doesn't contain a bomb
+        //only add neighbor nodes and recursions of it if doesn't contain a bomb
         else if !self.hasBomb {
             self.hidden = false
             nodes.insert(self)
@@ -193,16 +199,4 @@ public class MinesweeperNode : Hashable, Equatable {
     public static func ==(lhs: MinesweeperNode, rhs: MinesweeperNode) -> Bool {
         return lhs.row == rhs.row && lhs.column == rhs.column
     }
-}
-
-public class MinesweeperEdge {
-    
-    var origin: MinesweeperNode
-    var destination: MinesweeperNode
-    
-    init(origin: MinesweeperNode, destination: MinesweeperNode) {
-        self.origin = origin
-        self.destination = destination
-    }
-    
 }
