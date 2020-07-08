@@ -9,7 +9,7 @@
 import Foundation
 
 //move to main.swift file if running from Xcode
-//_ = Minesweeper()
+_ = Minesweeper()
 
 class Minesweeper {
 
@@ -18,13 +18,15 @@ class Minesweeper {
     
     static let noGameError = "Invalid entry; please create new game first."
     static let wrongDimensionsError = "Invalid entry; please enter two digits."
+    static let promptMessage = "Type 'new x y' for a new game of dimension x, bombs y.\nType 'reveal x y' to reveal grid cell at column x, row y.\nType 'q' to quit."
+    static let wonMessage = "*** YOU WON!!! ***"
 
     init() {
         consoleIO.writeMessage("Welcome to Minesweeper.")
 
         var shouldQuit = false
         while !shouldQuit {
-            consoleIO.writeMessage("Type 'new x y' for a new game of dimension x, bombs y.\nType 'reveal x y' to reveal grid cell at column x, row y.\nType 'q' to quit.")
+            consoleIO.writeMessage(Minesweeper.promptMessage)
             let input = consoleIO.getInput()
          
             if input == "q" {
@@ -47,6 +49,11 @@ class Minesweeper {
                 let validation = self.validate(input: input, action: "mark")
                 if validation == "" {
                     let marked = self.mark(column: markArgs[0], row: markArgs[1])
+                    //check if won
+                    if self.hasWon() {
+                        consoleIO.writeMessage(Minesweeper.wonMessage)
+                        self.model = nil
+                    }
                     consoleIO.writeMessage(marked)
                 }
                 else {
@@ -58,6 +65,11 @@ class Minesweeper {
                 let validation = self.validate(input: input, action: "mark")
                 if validation == "" {
                     let revealed = self.reveal(column: revealArgs[0], row: revealArgs[1])
+                    //check if won
+                    if self.hasWon() {
+                        consoleIO.writeMessage(Minesweeper.wonMessage)
+                        self.model = nil
+                    }
                     consoleIO.writeMessage(revealed)
                 }
                 else {
@@ -147,9 +159,15 @@ class Minesweeper {
         else {
             _ = currentModel.reveal(column: column, row: row)
 
-            //TODO return subset of nodes
+            //return entire board as it's more readable than just subset of nodes
             return self.currentBoard()
         }
+    }
+    
+    func hasWon() -> Bool {
+        guard let currentModel = self.model else { return false }
+        
+        return currentModel.hasWon()
     }
     
     //returns numeric portion of whitespace-separated string with three elements
@@ -168,6 +186,7 @@ class Minesweeper {
     }
 }
 
+//convenience class
 class ConsoleIO {
     func writeMessage(_ message: String) {
         print("\(message)")
@@ -293,6 +312,26 @@ class MinesweeperModel {
         for node in self.nodes {
             node.hidden = false
         }
+    }
+    
+    func hasWon() -> Bool {
+        var won = true
+        
+        //if not started, not won
+        if !self.isStarted() {
+            return false
+        }
+        for node in self.nodes {
+            //a hidden marked node with a mine counts as a win
+            //a revealed node with no mine counts as a win
+            won = node.hidden && node.marked && node.hasBomb || !node.hidden && !node.hasBomb
+            
+            if !won {
+                break
+            }
+        }
+
+        return won
     }
 }
 
