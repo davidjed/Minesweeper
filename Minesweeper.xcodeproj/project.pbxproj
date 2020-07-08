@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2C516CD924AFD7890031A69E /* ConsoleIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C516CD824AFD7890031A69E /* ConsoleIO.swift */; };
 		2C516CDB24AFD9400031A69E /* MinesweeperGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C516CDA24AFD9400031A69E /* MinesweeperGame.swift */; };
-		2CC5A4AF24B15977003F0F1F /* MinesweeperModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */; };
 		2CC7463024B6450600F66E40 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC7462F24B6450600F66E40 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,9 +25,7 @@
 
 /* Begin PBXFileReference section */
 		2C516CCE24AFBF010031A69E /* Minesweeper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Minesweeper; sourceTree = BUILT_PRODUCTS_DIR; };
-		2C516CD824AFD7890031A69E /* ConsoleIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleIO.swift; sourceTree = "<group>"; };
 		2C516CDA24AFD9400031A69E /* MinesweeperGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinesweeperGame.swift; sourceTree = "<group>"; };
-		2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinesweeperModel.swift; sourceTree = "<group>"; };
 		2CC7462F24B6450600F66E40 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,9 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				2CC7462F24B6450600F66E40 /* main.swift */,
-				2C516CD824AFD7890031A69E /* ConsoleIO.swift */,
 				2C516CDA24AFD9400031A69E /* MinesweeperGame.swift */,
-				2CC5A4AE24B15977003F0F1F /* MinesweeperModel.swift */,
 			);
 			path = Minesweeper;
 			sourceTree = "<group>";
@@ -129,10 +123,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2CC5A4AF24B15977003F0F1F /* MinesweeperModel.swift in Sources */,
 				2C516CDB24AFD9400031A69E /* MinesweeperGame.swift in Sources */,
 				2CC7463024B6450600F66E40 /* main.swift in Sources */,
-				2C516CD924AFD7890031A69E /* ConsoleIO.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
