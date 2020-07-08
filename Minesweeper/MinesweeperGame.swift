@@ -9,7 +9,7 @@
 import Foundation
 
 //move to main.swift file if running from Xcode
-_ = Minesweeper()
+//_ = Minesweeper()
 
 class Minesweeper {
 
@@ -104,7 +104,10 @@ class Minesweeper {
         for row in 0..<currentModel.dimension {
             board += "|"
             for column in 0..<currentModel.dimension {
-                if let node = currentModel.nodeAt(column: column, row: row) {
+                if !currentModel.isStarted() {
+                    board += MinesweeperNode.hiddenCell
+                }
+                else if let node = currentModel.nodeAt(column: column, row: row) {
                     board += node.description()
                 }
                 
@@ -133,9 +136,9 @@ class Minesweeper {
     
     func reveal(column: Int, row: Int) -> String {
         guard let currentModel = self.model else { return "No current game" }
-        guard let currentNode = currentModel.nodeAt(column: column, row: row) else { return "" }
         
-        if currentNode.hasBomb {
+        let revealedNodes = currentModel.reveal(column: column, row: row)
+        if revealedNodes.count == 1 && revealedNodes[0].hasBomb {
             currentModel.revealAll()
             let result = "*** BOOM! YOU LOST! ***\n \(self.currentBoard())"
             self.model = nil
@@ -182,21 +185,36 @@ class ConsoleIO {
 class MinesweeperModel {
     
     var dimension: Int
+    var bombCount: Int
     var nodes: [MinesweeperNode] = []
     
+    //initializes a new game but doesn't start it until the first mark or reveal action is called
     init(dimension: Int, bombs: Int) {
         self.dimension = dimension
-        
+        self.bombCount = bombs
+    }
+    
+    func isStarted() -> Bool {
+        return self.nodes.count > 0
+    }
+    
+    //starts game using existing dimensions and bombCount
+    //excludes coords passed in from having a bomb
+    private func start(column: Int, row: Int) {
         //unique set of random numbers for bombs
         var bombCells = Set<Coord>()
-        while bombCells.count < bombs {
+        while bombCells.count < self.bombCount {
             let randomColumn = Int.random(in: 0..<dimension)
             let randomRow = Int.random(in: 0..<dimension)
+            
+            //skip specified cell
+            if randomColumn == column && randomRow == row {
+                continue
+            }
+            
             let bombCell = Coord(column: randomColumn, row: randomRow)
             
-            if !bombCells.contains(bombCell) {
-                bombCells.update(with: bombCell)
-            }
+            bombCells.insert(bombCell)
         }
         
         //build node
@@ -253,12 +271,18 @@ class MinesweeperModel {
     }
     
     func mark(column: Int, row: Int) {
-        if let node = self.nodeAt(column: column, row: row) {
+        if !self.isStarted() {
+            self.start(column: column, row: row)
+        }
+        if let node = self.nodeAt(column: column, row: row), node.hidden {
             node.marked = !node.marked
         }
     }
 
     func reveal(column: Int, row: Int) -> [MinesweeperNode] {
+        if !self.isStarted() {
+            self.start(column: column, row: row)
+        }
         guard let node = self.nodeAt(column: column, row: row) else { return [] }
         var revealedNodes: [MinesweeperNode] = []
         revealedNodes.append(contentsOf: node.reveal())
