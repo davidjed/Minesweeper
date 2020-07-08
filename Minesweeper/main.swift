@@ -8,5 +8,5 @@
 
 import Foundation
 
-let minesweeper = Minesweeper()
+_ = Minesweeper()
 

@@ -33,9 +33,6 @@ public class MinesweeperModel {
         for nodeIndex in 0..<(dimension*dimension) {
             let row = Int(floor(Double(nodeIndex/dimension)))
             let column = nodeIndex % dimension
-            
-//            print("col: \(column), row: \(row)")
-            
             let cell = MinesweeperNode(column: column, row: row)
 
             //check if randomly-generated bombCell matches current cell
@@ -85,9 +82,17 @@ public class MinesweeperModel {
         return self.nodes[index]
     }
     
+    func mark(column: Int, row: Int) {
+        if let node = self.nodeAt(column: column, row: row) {
+            node.marked = !node.marked
+        }
+    }
+
     func reveal(column: Int, row: Int) -> [MinesweeperNode] {
         guard let node = self.nodeAt(column: column, row: row) else { return [] }
-        return node.reveal()
+        var revealedNodes: [MinesweeperNode] = []
+        revealedNodes.append(contentsOf: node.reveal())
+        return revealedNodes
     }
     
     func revealAll() {
@@ -102,7 +107,7 @@ struct Coord: Hashable {
   let row: Int
 }
 
-public class MinesweeperNode {
+public class MinesweeperNode : Hashable, Equatable {
     
     var column: Int
     var row: Int
@@ -121,7 +126,7 @@ public class MinesweeperNode {
         if self.marked {
             return "+"
         }
-        else if self.hasBomb  {//!self.hidden && self.hasBomb  {
+        else if /*!self.hidden && */self.hasBomb {
             return "*"
         }
         else if !self.hidden {
@@ -146,38 +151,47 @@ public class MinesweeperNode {
     
     //if this node contains bomb, reveal itself
     //if not, recursively reveal all non-bomb and bomb-adjacent nodes
-    func reveal(_ recursive: Bool = false) -> [MinesweeperNode] {
-        var nodes: [MinesweeperNode] = []
+    func reveal(_ currentNodes: Set<MinesweeperNode> = []) -> Set<MinesweeperNode> {
+        var nodes: Set<MinesweeperNode> = []
+        currentNodes.forEach { nodes.insert($0) }
         
-        //always includes self if not recursive
-        if !recursive {
+        //always unhide start node
+        if currentNodes.count == 0 {
             self.hidden = false
-            nodes.append(self)
+            //return only self if has bomb
+            if self.hasBomb {
+                nodes.insert(self)
+                return nodes
+            }
+        }
+        //only add neighbor nodes and recursions of same if doesn't contain a bomb
+        else if !self.hasBomb {
+            self.hidden = false
+            nodes.insert(self)
         }
         
-        //return only self if has bomb
-        if self.hasBomb {
-            return nodes
-        }
-        else {
-            for neighbor in neighbors {
-                //skip neighbors with bombs
-                if neighbor.hasBomb {
+        //recurse thru all valid neighbor nodes only if this node has no neighborBombs
+        if self.neighborBombs() == 0 {
+            for neighbor in self.neighbors {
+                //if already revealed, no need to recurse
+                if !neighbor.hidden {
                     continue
                 }
-                else {
-                    neighbor.hidden = false
-                    nodes.append(neighbor)
-                    
-                    //recurse thru all valid neighbor nodes if this node has no neighborBombs
-                    if self.neighborBombs() == 0 {
-                        nodes.append(contentsOf: neighbor.reveal(true))
-                    }
-                }
+                let revealedNeighbors = neighbor.reveal(nodes)
+                revealedNeighbors.forEach { nodes.insert($0) }
             }
         }
         
         return nodes
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.column)
+        hasher.combine(self.row)
+    }
+    
+    public static func ==(lhs: MinesweeperNode, rhs: MinesweeperNode) -> Bool {
+        return lhs.row == rhs.row && lhs.column == rhs.column
     }
 }
 

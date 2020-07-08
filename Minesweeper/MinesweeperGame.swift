@@ -8,11 +8,18 @@
 
 import Foundation
 
-public class Minesweeper {
+class Minesweeper {
 
     let consoleIO = ConsoleIO()
     var model: MinesweeperModel?
     
+    static let noGameError = "Invalid entry; please create new game first."
+    static let wrongDimensionsError = "Invalid entry; please enter two digits."
+
+    static func main() {
+        _ = Minesweeper()
+    }
+
     init() {
         consoleIO.writeMessage("Welcome to Minesweeper.")
 
@@ -25,34 +32,38 @@ public class Minesweeper {
                 shouldQuit = true
             }
             else if input.hasPrefix("new") {
+                let validation = self.validate(input: input, action: "mark")
                 let newArgs = self.numericComponents(input)
-                if newArgs.count == 2 {
+                if validation == "" {
                     self.model = MinesweeperModel(dimension: newArgs[0], bombs: newArgs[1])
                     consoleIO.writeMessage("*** NEW GAME ***")
                     consoleIO.writeMessage(self.currentBoard())
                 }
                 else {
-                    consoleIO.writeMessage("Invalid entry; please create new game with 'new x y' for a new game of dimension x, bombs y.")
+                    consoleIO.writeMessage(validation)
+                }
+            }
+            else if input.hasPrefix("mark") {
+                let markArgs = self.numericComponents(input)
+                let validation = self.validate(input: input, action: "mark")
+                if validation == "" {
+                    let marked = self.mark(column: markArgs[0], row: markArgs[1])
+                    consoleIO.writeMessage(marked)
+                }
+                else {
+                    consoleIO.writeMessage(validation)
                 }
             }
             else if input.hasPrefix("reveal") {
-                let newArgs = self.numericComponents(input)
-                if let currentModel = self.model, newArgs.count == 2 {
-                    if newArgs[0] >= currentModel.dimension || newArgs[1] >= currentModel.dimension {
-                        consoleIO.writeMessage("Invalid entry; please reveal cells within the board's dimensions.")
-                    }
-                    else {
-                        let revealed = self.reveal(column: newArgs[0], row: newArgs[1])
-                        consoleIO.writeMessage(revealed)
-                    }
+                let revealArgs = self.numericComponents(input)
+                let validation = self.validate(input: input, action: "mark")
+                if validation == "" {
+                    let revealed = self.reveal(column: revealArgs[0], row: revealArgs[1])
+                    consoleIO.writeMessage(revealed)
                 }
                 else {
-                    consoleIO.writeMessage("Invalid entry; please create new game with 'new x y' for a new game of dimension x, bombs y.")
+                    consoleIO.writeMessage(validation)
                 }
-            }
-            //TEST ONLY
-            else if input == "board" {
-                consoleIO.writeMessage(self.currentBoard())
             }
             else {
                 consoleIO.writeMessage("Invalid entry: \(input)")
@@ -60,6 +71,29 @@ public class Minesweeper {
         }
     }
     
+    //validates input for game actions; if valid input, returns empty string
+    func validate(input: String, action: String) -> String {
+        let numericArgs = self.numericComponents(input)
+        if input.hasPrefix("new") {
+            return numericArgs.count == 2 ? "" : Minesweeper.wrongDimensionsError
+        }
+        else if let currentModel = self.model, numericArgs.count == 2 {
+            if numericArgs[0] < 0 || numericArgs[0] >= currentModel.dimension ||
+               numericArgs[1] < 0 || numericArgs[1] >= currentModel.dimension {
+                return "Invalid entry; please \(action) cells within the board's dimensions."
+            }
+            else {
+                return ""
+            }
+        }
+        else if numericArgs.count != 2 {
+            return Minesweeper.wrongDimensionsError
+        }
+        else {
+            return Minesweeper.noGameError
+        }
+    }
+        
     func currentBoard() -> String {
         guard let currentModel = self.model else { return "No current game" }
         //print rows-wise, since Strings are built as rows of text
@@ -88,6 +122,14 @@ public class Minesweeper {
         }
         
         return board
+    }
+    
+    func mark(column: Int, row: Int) -> String {
+        guard let currentModel = self.model else { return "No current game" }
+        
+        currentModel.mark(column: column, row: row)
+
+        return self.currentBoard()
     }
     
     func reveal(column: Int, row: Int) -> String {
